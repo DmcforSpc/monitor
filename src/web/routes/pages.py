@@ -10,14 +10,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func, select
 
-from cve_monitor import __version__
-from cve_monitor.core.collectors import collector_registry
-from cve_monitor.core.notifiers import notifier_registry
-from cve_monitor.core.pipeline import load_plugins
-from cve_monitor.db.models import CollectedItem, CollectorRun
-from cve_monitor.scheduler import scheduler_service
-from cve_monitor.settings import get_settings
-from cve_monitor.web.deps import SessionDep
+from src import __version__
+from src.core.collectors import collector_registry
+from src.core.notifiers import notifier_registry
+from src.core.pipeline import load_plugins
+from src.db.models import CollectedItem, CollectorRun
+from src.scheduler import scheduler_service
+from src.settings import get_settings
+from src.web.deps import SessionDep
 
 router = APIRouter(tags=["pages"])
 

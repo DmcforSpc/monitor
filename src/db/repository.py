@@ -14,7 +14,7 @@ from sqlalchemy import func, select
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
-from cve_monitor.db.models import (
+from src.db.models import (
     CollectedItem,
     CollectorRun,
     ItemStatus,

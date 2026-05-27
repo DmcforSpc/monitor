@@ -16,9 +16,9 @@ from __future__ import annotations
 
 import typer
 
-from cve_monitor import __version__
-from cve_monitor.logging import configure_logging, get_logger
-from cve_monitor.settings import get_settings
+from src import __version__
+from src.logging import configure_logging, get_logger
+from src.settings import get_settings
 
 app = typer.Typer(
     name="cve-monitor",
@@ -59,7 +59,7 @@ def serve(
 
     typer.echo(f"Starting {settings.app_name} v{__version__} on http://{bind_host}:{bind_port}")
     uvicorn.run(
-        "cve_monitor.web.app:create_app",
+        "src.web.app:create_app",
         factory=True,
         host=bind_host,
         port=bind_port,
@@ -76,7 +76,7 @@ def collect(
     ),
 ) -> None:
     """Run one collection cycle synchronously and exit."""
-    from cve_monitor.core.pipeline import load_plugins, run_collector, run_pipeline
+    from src.core.pipeline import load_plugins, run_collector, run_pipeline
 
     settings = get_settings()
     configure_logging(settings)
@@ -111,13 +111,13 @@ def collect(
 @list_app.command("collectors")
 def list_collectors() -> None:
     """Show all registered collectors."""
-    from cve_monitor.core.collectors import collector_registry
-    from cve_monitor.core.pipeline import load_plugins
+    from src.core.collectors import collector_registry
+    from src.core.pipeline import load_plugins
 
     load_plugins()
     if not collector_registry:
         typer.secho("No collectors registered.", fg=typer.colors.YELLOW)
-        typer.echo("Add modules under src/cve_monitor/collectors/ — see README.")
+        typer.echo("Add modules under src/collectors/ — see README.")
         return
     typer.echo(f"{'NAME':<24} ENABLED  DESCRIPTION")
     for cls in collector_registry.values():
@@ -128,13 +128,13 @@ def list_collectors() -> None:
 @list_app.command("notifiers")
 def list_notifiers() -> None:
     """Show all registered notifiers."""
-    from cve_monitor.core.notifiers import notifier_registry
-    from cve_monitor.core.pipeline import load_plugins
+    from src.core.notifiers import notifier_registry
+    from src.core.pipeline import load_plugins
 
     load_plugins()
     if not notifier_registry:
         typer.secho("No notifiers registered.", fg=typer.colors.YELLOW)
-        typer.echo("Add modules under src/cve_monitor/notifiers/ — see README.")
+        typer.echo("Add modules under src/notifiers/ — see README.")
         return
     typer.echo(f"{'NAME':<24} ENABLED  DESCRIPTION")
     for cls in notifier_registry.values():
@@ -148,7 +148,7 @@ def list_notifiers() -> None:
 @db_app.command("init")
 def db_init() -> None:
     """Create tables if they do not exist."""
-    from cve_monitor.db.base import init_db
+    from src.db.base import init_db
 
     configure_logging()
     init_db()
@@ -160,7 +160,7 @@ def db_reset(
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation prompt."),
 ) -> None:
     """DROP and recreate all tables (destructive)."""
-    from cve_monitor.db.base import reset_db
+    from src.db.base import reset_db
 
     configure_logging()
     settings = get_settings()

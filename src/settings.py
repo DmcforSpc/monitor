@@ -50,7 +50,7 @@ class Settings(BaseSettings):
 
     # ── HTTP client defaults ────────────────────────────────────────
     http_timeout: int = Field(default=30, ge=1)
-    http_user_agent: str = "CVE-Monitor/4.0"
+    http_user_agent: str = "CVE-Monitor/1.0"
     http_proxy: str | None = None
 
     # ── Plugin namespace ────────────────────────────────────────────

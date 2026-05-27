@@ -26,9 +26,9 @@ from typing import ClassVar, TypeVar
 
 import httpx
 
-from cve_monitor.db.models import CollectedItem
-from cve_monitor.logging import get_logger
-from cve_monitor.settings import Settings, get_settings
+from src.db.models import CollectedItem
+from src.logging import get_logger
+from src.settings import Settings, get_settings
 
 
 @dataclass(frozen=True, slots=True)

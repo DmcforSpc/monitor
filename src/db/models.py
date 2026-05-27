@@ -20,7 +20,7 @@ from typing import Any
 from sqlalchemy import JSON, DateTime, Enum, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
-from cve_monitor.db.base import Base
+from src.db.base import Base
 
 
 def _utcnow() -> datetime:

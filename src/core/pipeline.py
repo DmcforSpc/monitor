@@ -5,8 +5,8 @@ Two entry points:
 * :func:`run_pipeline` — one full cycle across every enabled collector
 * :func:`run_collector` — execute a single collector by name
 
-Plugin discovery is lazy: :func:`load_plugins` walks the ``cve_monitor.collectors``
-and ``cve_monitor.notifiers`` namespaces with :mod:`pkgutil` and imports every
+Plugin discovery is lazy: :func:`load_plugins` walks the ``src.collectors``
+and ``src.notifiers`` namespaces with :mod:`pkgutil` and imports every
 submodule, which triggers the registration decorators.
 """
 
@@ -18,29 +18,29 @@ import time
 import traceback
 from dataclasses import dataclass, field
 
-import cve_monitor.collectors as _collectors_pkg
-import cve_monitor.notifiers as _notifiers_pkg
-from cve_monitor.core.collectors import BaseCollector, collector_registry
-from cve_monitor.core.notifiers import (
+import src.collectors as _collectors_pkg
+import src.notifiers as _notifiers_pkg
+from src.core.collectors import BaseCollector, collector_registry
+from src.core.notifiers import (
     DispatchSummary,
     NotificationResult,
     iter_enabled_notifiers,
 )
-from cve_monitor.db.base import db_session
-from cve_monitor.db.models import (
+from src.db.base import db_session
+from src.db.models import (
     CollectedItem,
     ItemStatus,
     NotificationStatus,
     RunStatus,
 )
-from cve_monitor.db.repository import (
+from src.db.repository import (
     mark_processed,
     record_notification,
     record_run,
     upsert_items,
 )
-from cve_monitor.logging import get_logger
-from cve_monitor.settings import Settings, get_settings
+from src.logging import get_logger
+from src.settings import Settings, get_settings
 
 log = get_logger(__name__)
 

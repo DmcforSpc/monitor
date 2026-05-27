@@ -8,9 +8,9 @@ from typing import Any
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from cve_monitor.core.pipeline import run_pipeline
-from cve_monitor.logging import get_logger
-from cve_monitor.settings import Settings, get_settings
+from src.core.pipeline import run_pipeline
+from src.logging import get_logger
+from src.settings import Settings, get_settings
 
 log = get_logger(__name__)
 

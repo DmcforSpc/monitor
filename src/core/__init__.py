@@ -1,17 +1,17 @@
 """Core abstractions: collectors, notifiers, and the orchestration pipeline."""
 
-from cve_monitor.core.collectors import (
+from src.core.collectors import (
     BaseCollector,
     collector_registry,
     register_collector,
 )
-from cve_monitor.core.notifiers import (
+from src.core.notifiers import (
     BaseNotifier,
     NotificationResult,
     notifier_registry,
     register_notifier,
 )
-from cve_monitor.core.pipeline import (
+from src.core.pipeline import (
     PipelineResult,
     load_plugins,
     run_collector,

@@ -9,8 +9,8 @@ pipeline.
 ```python
 from collections.abc import Iterable
 
-from cve_monitor.core.collectors import BaseCollector, register_collector
-from cve_monitor.db.models import CollectedItem
+from src.core.collectors import BaseCollector, register_collector
+from src.db.models import CollectedItem
 
 
 @register_collector

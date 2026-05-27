@@ -12,7 +12,7 @@ from logging.handlers import RotatingFileHandler
 
 import structlog
 
-from cve_monitor.settings import Settings, get_settings
+from src.settings import Settings, get_settings
 
 _configured = False
 

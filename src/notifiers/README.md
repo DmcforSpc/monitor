@@ -7,12 +7,12 @@ dispatch chain.
 ## Minimal contract
 
 ```python
-from cve_monitor.core.notifiers import (
+from src.core.notifiers import (
     BaseNotifier,
     NotificationResult,
     register_notifier,
 )
-from cve_monitor.db.models import CollectedItem
+from src.db.models import CollectedItem
 
 
 @register_notifier

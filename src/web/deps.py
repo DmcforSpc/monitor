@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from cve_monitor.db.base import get_session
+from src.db.base import get_session
 
 
 def db_dep() -> Iterator[Session]:

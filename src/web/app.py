@@ -12,11 +12,11 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
-from cve_monitor import __version__
-from cve_monitor.db.base import init_db
-from cve_monitor.logging import configure_logging, get_logger
-from cve_monitor.scheduler import scheduler_service
-from cve_monitor.settings import get_settings
+from src import __version__
+from src.db.base import init_db
+from src.logging import configure_logging, get_logger
+from src.scheduler import scheduler_service
+from src.settings import get_settings
 
 log = get_logger(__name__)
 
@@ -51,8 +51,8 @@ def create_app() -> FastAPI:
     )
 
     # Routers
-    from cve_monitor.web.routes.api import router as api_router
-    from cve_monitor.web.routes.pages import router as pages_router
+    from src.web.routes.api import router as api_router
+    from src.web.routes.pages import router as pages_router
 
     app.include_router(api_router)
     app.include_router(pages_router)

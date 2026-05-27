@@ -13,7 +13,7 @@ Example::
         def collect(self) -> Iterable[CollectedItem]:
             ...
 
-Place the module under :mod:`cve_monitor.collectors` and it will be picked up
+Place the module under :mod:`src.collectors` and it will be picked up
 automatically on the next pipeline run.
 """
 
@@ -26,9 +26,9 @@ from typing import ClassVar, TypeVar
 
 import httpx
 
-from cve_monitor.db.models import CollectedItem
-from cve_monitor.logging import get_logger
-from cve_monitor.settings import Settings, get_settings
+from src.db.models import CollectedItem
+from src.logging import get_logger
+from src.settings import Settings, get_settings
 
 
 class BaseCollector(abc.ABC):

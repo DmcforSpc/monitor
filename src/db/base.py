@@ -4,7 +4,7 @@ The engine is built lazily from ``settings.database_url``. SQLite gets WAL
 mode and a sensible busy timeout; other backends use their defaults. Session
 usage:
 
-    from cve_monitor.db import db_session
+    from src.db import db_session
 
     with db_session() as session:
         session.add(item)
@@ -19,8 +19,8 @@ from typing import Any
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-from cve_monitor.logging import get_logger
-from cve_monitor.settings import get_settings
+from src.logging import get_logger
+from src.settings import get_settings
 
 log = get_logger(__name__)
 
@@ -87,7 +87,7 @@ def db_session() -> Generator[Session, None, None]:
 def init_db() -> None:
     """Create all tables (idempotent)."""
     # Import models to register them on Base.metadata before create_all.
-    from cve_monitor.db import models  # noqa: F401
+    from src.db import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
     log.info("database initialised", url=get_settings().database_url)
@@ -95,7 +95,7 @@ def init_db() -> None:
 
 def reset_db() -> None:
     """Drop and recreate all tables. Destructive — for dev/testing only."""
-    from cve_monitor.db import models  # noqa: F401
+    from src.db import models  # noqa: F401
 
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)

@@ -1,4 +1,4 @@
-# CVE Monitor v4.0
+# CVE Monitor v1.0
 
 > **可扩展的安全情报采集与推送框架** — 提供数据采集、去重、调度、Web 仪表盘和通知派发的通用基础设施，业务逻辑（具体采集源、通知渠道、评分规则）以**插件式**方式由用户自行扩展。
 
@@ -48,7 +48,7 @@ uv run cve-monitor version            # 显示版本
 ## 项目结构
 
 ```
-src/cve_monitor/
+src/
 ├── settings.py              # Pydantic Settings（所有配置入口）
 ├── logging.py               # structlog 配置
 ├── cli.py                   # Typer CLI 命令
@@ -75,7 +75,7 @@ src/cve_monitor/
 
 ## 扩展：实现一个采集器
 
-新建 `src/cve_monitor/collectors/cisa_kev.py`：
+新建 `src/collectors/cisa_kev.py`：
 
 ```python
 from collections.abc import Iterable
@@ -83,8 +83,8 @@ from datetime import datetime
 
 import httpx
 
-from cve_monitor.core.collectors import BaseCollector, register_collector
-from cve_monitor.db.models import CollectedItem
+from src.core.collectors import BaseCollector, register_collector
+from src.db.models import CollectedItem
 
 
 @register_collector
@@ -117,13 +117,13 @@ class CisaKevCollector(BaseCollector):
 
 ## 扩展：实现一个通知渠道
 
-新建 `src/cve_monitor/notifiers/feishu.py`：
+新建 `src/notifiers/feishu.py`：
 
 ```python
 import httpx
 
-from cve_monitor.core.notifiers import BaseNotifier, NotificationResult, register_notifier
-from cve_monitor.db.models import CollectedItem
+from src.core.notifiers import BaseNotifier, NotificationResult, register_notifier
+from src.db.models import CollectedItem
 
 
 @register_notifier

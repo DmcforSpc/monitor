@@ -1,6 +1,6 @@
 [project]
 name = "cve-monitor"
-version = "4.0.0"
+version = "1.0.0"
 description = "可扩展的安全情报采集与推送平台（纯框架，业务靠插件式 collectors/notifiers 扩展）"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -31,14 +31,14 @@ dev = [
 ]
 
 [project.scripts]
-cve-monitor = "cve_monitor.cli:app"
+cve-monitor = "src.cli:app"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/cve_monitor"]
+packages = ["src"]
 
 # ── uv ──────────────────────────────────────────────────────────────
 [dependency-groups]
@@ -68,7 +68,10 @@ plugins = ["pydantic.mypy"]
 exclude = ["tests/"]
 
 # ── pytest ──────────────────────────────────────────────────────────
+# NOTE: do NOT put "src" on pythonpath — it would shadow stdlib `logging`
+# because src/logging.py exists. Project is installed via `pip install -e .`
+# so absolute imports like `from src.db.base import ...` resolve correctly.
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["."]
 testpaths = ["tests"]
 addopts = "-ra -q --strict-markers"
