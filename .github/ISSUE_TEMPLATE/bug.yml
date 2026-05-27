@@ -1,0 +1,85 @@
+name: 🐛 Bug Report
+description: Report a bug in the framework code or a bundled default plugin
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report!
+
+        ⚠️  **Plugin-specific bugs** in collectors / notifiers you wrote yourself
+        should go to that plugin's own repo, not here.
+
+        🔒  **Security vulnerabilities** must be reported privately via
+        [GitHub Security Advisories](https://github.com/DmcforSpc/monitor/security/advisories/new).
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "e.g. 1.0.0 or 1f2024e"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      options:
+        - Framework core (src/core, src/db, src/web, src/scheduler)
+        - Default collector (cisa_kev / nvd_recent / ghsa)
+        - Default notifier (console)
+        - CLI (cve-monitor command)
+        - Web dashboard / templates
+        - Docker / docker-compose
+        - CI workflow (lint / test / docs / release)
+        - Documentation site (MkDocs)
+        - Other / unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug, what you expected to happen, and what you saw instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: A minimal sequence of commands that triggers the bug.
+      placeholder: |
+        1. cve-monitor db init
+        2. CVE_PLUGIN_CISA_KEV_ENABLED=true cve-monitor collect
+        3. ...
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / traceback
+      description: Last ~30 lines of output. Set `CVE_LOG_LEVEL=DEBUG` for more detail.
+      render: shell
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "Python 3.11.4 / Ubuntu 22.04 / Docker compose 2.x"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: hygiene
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I have searched existing issues for duplicates
+          required: true
+        - label: I have removed any secrets / credentials from the logs above
+          required: true

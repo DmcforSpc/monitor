@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Security vulnerability (private)
+    url: https://github.com/DmcforSpc/monitor/security/advisories/new
+    about: Use GitHub's private vulnerability reporting — do NOT open a public issue.
+  - name: 💬 Question / general discussion
+    url: https://github.com/DmcforSpc/monitor/discussions
+    about: For usage questions, design discussion, or show-and-tell — open a Discussion.
+  - name: 📚 Documentation
+    url: https://DmcforSpc.github.io/monitor/
+    about: Check the docs site first; many "bugs" turn out to be config questions.

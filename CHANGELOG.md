@@ -66,6 +66,19 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
   Default policy: 3 attempts, exponential backoff (0.5s × 2^n + jitter),
   honours `Retry-After`, retries on 429 / 5xx.
 
+### Community & release
+- `SECURITY.md`: vulnerability reporting policy, SLAs, scope, supported versions
+- `CODE_OF_CONDUCT.md`: Contributor Covenant 2.1
+- `.editorconfig`: universal editor settings (LF / UTF-8 / trailing whitespace)
+- `.github/ISSUE_TEMPLATE/{bug,feature,config}.yml`: GitHub issue form
+  templates with pre-flight checklists, dropdowns, secret-redaction reminders
+- `.github/PULL_REQUEST_TEMPLATE.md`: PR checklist (lint / format / tests /
+  CHANGELOG / docs / no secrets)
+- `.github/workflows/release.yml`: triggered on `v*.*.*` tag — verifies
+  pyproject.toml version == tag, builds multi-arch (amd64 + arm64) Docker
+  image, pushes to GHCR with `:latest` / `:1.x.y` / `:1.x` / `:1` tags,
+  creates GitHub Release with auto-generated notes + Docker pull example
+
 ## [1.0.0] - 2026-05-27
 
 ### Added
