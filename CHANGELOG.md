@@ -40,6 +40,15 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
   environment (Python 3.11 + uv + ruff + mypy + recommended extensions,
   auto-installs project + pre-commit)
 
+### Documentation
+- MkDocs Material site under `docs/` covering quickstart, architecture,
+  plugin development (collectors & notifiers), deployment (Docker /
+  security / observability), and CLI / API / configuration / data model
+  references
+- `[docs]` extras group: `mkdocs-material` + `pymdown-extensions`
+- `.github/workflows/docs.yml`: build (`mkdocs build --strict`) + deploy to
+  GitHub Pages on every push to `main` that touches docs
+
 ## [1.0.0] - 2026-05-27
 
 ### Added

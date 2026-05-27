@@ -2,6 +2,8 @@
 
 > **可扩展的安全情报采集与推送框架** — 提供数据采集、去重、调度、Web 仪表盘和通知派发的通用基础设施，业务逻辑（具体采集源、通知渠道、评分规则）以**插件式**方式由用户自行扩展。
 
+📚 **[完整文档站](https://DmcforSpc.github.io/monitor/)** · 🐳 [Docker Hub](#docker生产推荐) · 📦 [CHANGELOG](CHANGELOG.md) · 🤝 [贡献指南](CONTRIBUTING.md)
+
 ## 设计理念
 
 - **框架与业务分离**：核心代码不耦合任何具体 CVE / RSS / Webhook 数据源
