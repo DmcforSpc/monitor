@@ -46,7 +46,26 @@ uv run cve-monitor serve
 
 打开 `http://127.0.0.1:8000` → 仪表盘。空数据库是预期 — 还没有 collector。
 
-## 6. 写第一个采集器
+## 6. 启用一个内置默认源（最快）
+
+仓库自带 3 个默认采集器 + 1 个默认通知，全部默认 disabled（除了 console）。两行 env 即可看到推送：
+
+```bash
+# 启用 CISA KEV（最高信号源，无需 token）
+export CVE_PLUGIN_CISA_KEV_ENABLED=true
+uv run cve-monitor collect
+```
+
+启动后日志里能看到形如 `item_dispatched collector=cisa_kev external_id=CVE-2024-xxxx ...` 的输出，就说明端到端通了。其他可启用的：
+
+| 源 | 启用 env | 备注 |
+| --- | --- | --- |
+| `cisa_kev` | `CVE_PLUGIN_CISA_KEV_ENABLED=true` | 在野利用确认 |
+| `nvd_recent` | `CVE_PLUGIN_NVD_RECENT_ENABLED=true` | 可设 `NVD_RECENT_API_KEY` 提升限速 |
+| `ghsa` | `CVE_PLUGIN_GHSA_ENABLED=true` | 可设 `GHSA_TOKEN` 或 `GH_TOKEN` 走 5000/hr |
+| `console` | 默认 ON | `CVE_PLUGIN_CONSOLE_ENABLED=false` 关闭 |
+
+## 7. 写第一个采集器
 
 ```python title="src/collectors/example.py"
 from collections.abc import Iterable

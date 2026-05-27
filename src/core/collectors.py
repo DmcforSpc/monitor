@@ -26,6 +26,7 @@ from typing import ClassVar, TypeVar
 
 import httpx
 
+from src.core.http import build_http_client
 from src.db.models import CollectedItem
 from src.logging import get_logger
 from src.settings import Settings, get_settings
@@ -79,16 +80,13 @@ class BaseCollector(abc.ABC):
         return hashlib.sha256(joined.encode("utf-8")).hexdigest()
 
     def http_client(self, **overrides: object) -> httpx.Client:
-        """Return an httpx.Client pre-configured with project defaults."""
-        kwargs: dict[str, object] = {
-            "timeout": self.settings.http_timeout,
-            "headers": {"User-Agent": self.settings.http_user_agent},
-            "follow_redirects": True,
-        }
-        if self.settings.http_proxy:
-            kwargs["proxy"] = self.settings.http_proxy
-        kwargs.update(overrides)
-        return httpx.Client(**kwargs)  # type: ignore[arg-type]
+        """Return an httpx.Client pre-configured with project defaults.
+
+        Includes automatic retries (3 attempts, exponential backoff, honours
+        ``Retry-After``) for transient HTTP failures (429, 5xx). See
+        :mod:`src.core.http` for the retry policy.
+        """
+        return build_http_client(self.settings, **overrides)
 
 
 # ── Registry ────────────────────────────────────────────────────────

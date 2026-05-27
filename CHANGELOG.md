@@ -49,6 +49,23 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
 - `.github/workflows/docs.yml`: build (`mkdocs build --strict`) + deploy to
   GitHub Pages on every push to `main` that touches docs
 
+### Default plugins (bundled, all opt-in)
+- **`cisa_kev`** collector — CISA Known Exploited Vulnerabilities catalog
+  (highest-signal source; no auth). `CVE_PLUGIN_CISA_KEV_ENABLED=true`.
+- **`nvd_recent`** collector — NIST NVD API 2.0, configurable lookback
+  window (default 7 days) + CVSS extraction. `CVE_PLUGIN_NVD_RECENT_ENABLED=true`.
+- **`ghsa`** collector — GitHub Security Advisories (severity ≥ high), opt-in
+  PAT for higher rate limit. `CVE_PLUGIN_GHSA_ENABLED=true`.
+- **`console`** notifier — structlog dispatcher; **enabled by default** so
+  the pipeline produces visible output without any configuration. Disable
+  with `CVE_PLUGIN_CONSOLE_ENABLED=false`.
+
+### Processing logic
+- `httpx-retries` integrated into `BaseCollector.http_client()` and
+  `BaseNotifier.http_client()` via the shared factory `src/core/http.py`.
+  Default policy: 3 attempts, exponential backoff (0.5s × 2^n + jitter),
+  honours `Retry-After`, retries on 429 / 5xx.
+
 ## [1.0.0] - 2026-05-27
 
 ### Added
