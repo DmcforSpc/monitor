@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} · Dashboard</title>
+    <style>
+        :root {
+            --bg: #0f1115;
+            --panel: #1a1d24;
+            --panel-2: #232733;
+            --border: #2a2f3d;
+            --text: #e6e8ee;
+            --muted: #8a93a6;
+            --accent: #6ea8fe;
+            --ok: #5dd39e;
+            --warn: #ffb454;
+            --err: #ff6b6b;
+            --radius: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); }
+        header { padding: 18px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 18px; font-weight: 600; }
+        header .meta { color: var(--muted); font-size: 12px; }
+        main { max-width: 1280px; margin: 0 auto; padding: 24px; display: grid; gap: 20px; grid-template-columns: 1fr 320px; }
+        .stack { display: flex; flex-direction: column; gap: 20px; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+        .card h2 { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .stat { background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+        .stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat .value { font-size: 24px; font-weight: 600; margin-top: 4px; }
+        .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .row:last-child { border-bottom: none; }
+        .row .badge { color: var(--muted); font-variant-numeric: tabular-nums; }
+        .item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .item:last-child { border-bottom: none; }
+        .item .title { font-weight: 500; }
+        .item .title a { color: var(--text); text-decoration: none; }
+        .item .title a:hover { color: var(--accent); }
+        .item .meta { color: var(--muted); font-size: 12px; margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .tag { background: var(--panel-2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+        .tag-ok { color: var(--ok); border-color: rgba(93,211,158,0.3); }
+        .tag-err { color: var(--err); border-color: rgba(255,107,107,0.3); }
+        .empty { color: var(--muted); font-style: italic; padding: 12px 0; }
+        footer { text-align: center; padding: 18px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 24px; }
+        @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>{{ app_name }}</h1>
+    <div class="meta">
+        v{{ version }} ·
+        scheduler {{ "running" if scheduler.running else "stopped" }} ·
+        interval {{ scheduler.interval_seconds }}s
+        {% if scheduler.next_run %}· next {{ scheduler.next_run }}{% endif %}
+    </div>
+</header>
+
+<main>
+    <div class="stack">
+        <section class="card">
+            <h2>Overview</h2>
+            <div class="stats">
+                <div class="stat"><div class="label">Total items</div><div class="value">{{ total }}</div></div>
+                <div class="stat"><div class="label">Collectors</div><div class="value">{{ collectors|length }}</div></div>
+                <div class="stat"><div class="label">Notifiers</div><div class="value">{{ notifiers|length }}</div></div>
+                <div class="stat"><div class="label">Sources active</div><div class="value">{{ by_collector|length }}</div></div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Recent items</h2>
+            {% if recent_items %}
+                {% for item in recent_items %}
+                <div class="item">
+                    <div class="title">
+                        {% if item.url %}
+                            <a href="{{ item.url }}" target="_blank" rel="noopener">{{ item.external_id or item.title[:80] }}</a>
+                        {% else %}
+                            {{ item.external_id or item.title[:80] }}
+                        {% endif %}
+                    </div>
+                    <div class="meta">
+                        <span class="tag">{{ item.collector }}</span>
+                        <span class="tag">{{ item.status.value }}</span>
+                        <span>{{ item.created_at.strftime("%Y-%m-%d %H:%M") }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">No items collected yet. Add a collector under <code>src/cve_monitor/collectors/</code> and run <code>cve-monitor collect</code>.</div>
+            {% endif %}
+        </section>
+    </div>
+
+    <aside class="stack">
+        <section class="card">
+            <h2>Collectors</h2>
+            {% if collectors %}
+                {% for c in collectors %}
+                <div class="row">
+                    <span>{{ c.name }}</span>
+                    <span class="badge">{{ by_collector|selectattr("0", "equalto", c.name)|map(attribute="1")|first|default(0) }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">No collectors registered.</div>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <h2>Notifiers</h2>
+            {% if notifiers %}
+                {% for n in notifiers %}
+                <div class="row">
+                    <span>{{ n.name }}</span>
+                    <span class="badge">{{ n.description or "—" }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">No notifiers registered.</div>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <h2>Recent runs</h2>
+            {% if recent_runs %}
+                {% for run in recent_runs %}
+                <div class="row">
+                    <span>{{ run.collector }}</span>
+                    <span class="badge tag {{ 'tag-ok' if run.status.value == 'ok' else 'tag-err' }}">
+                        {{ run.status.value }} · +{{ run.items_new }} / {{ run.items_found }}
+                    </span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">No runs yet.</div>
+            {% endif %}
+        </section>
+    </aside>
+</main>
+
+<footer>
+    Read-only · No login · No mutation endpoint · Built with FastAPI {{ version }}
+</footer>
+</body>
+</html>
