@@ -30,6 +30,33 @@ uv run cve-monitor serve
 
 打开 `http://127.0.0.1:8000` 查看仪表盘。
 
+### Docker（生产推荐）
+
+```bash
+# 单容器
+docker build -t cve-monitor .
+docker run -d --name cve-monitor -p 8000:8000 -v cve-data:/data \
+    -e CVE_DATABASE_URL=sqlite:////data/cve_monitor.db cve-monitor
+
+# 或用 compose（自动持久化卷 + 健康检查）
+docker compose up -d
+docker compose logs -f
+```
+
+镜像基于 `python:3.11-slim`，多阶段构建用 uv 锁定依赖，运行时为非 root 用户 + 内置 healthcheck。
+
+### 安全中间件（公网部署）
+
+通过环境变量按需启用，全部默认关闭：
+
+```bash
+CVE_ALLOWED_HOSTS="cve.example.com,localhost"   # TrustedHost
+CVE_CORS_ORIGINS="https://app.example.com"      # 允许浏览器跨域 GET
+CVE_CORS_ALLOW_CREDENTIALS=false
+```
+
+`SecurityHeadersMiddleware` 默认始终启用（无需配置），会注入 `X-Content-Type-Options`、`X-Frame-Options: DENY`、`Strict-Transport-Security`、`Referrer-Policy`、`Permissions-Policy`、`Cross-Origin-Opener-Policy`。
+
 ## CLI 命令
 
 ```bash

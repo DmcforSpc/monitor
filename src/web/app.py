@@ -50,6 +50,11 @@ def create_app() -> FastAPI:
         lifespan=_lifespan,
     )
 
+    # Middleware (security headers always on; TrustedHost/CORS opt-in via settings)
+    from src.web.middleware import install_middlewares
+
+    install_middlewares(app, settings)
+
     # Routers
     from src.web.routes.api import router as api_router
     from src.web.routes.pages import router as pages_router

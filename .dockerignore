@@ -1,0 +1,56 @@
+# VCS
+.git
+.gitignore
+.github
+
+# Python build artifacts
+__pycache__
+*.py[cod]
+*$py.class
+*.egg-info
+build
+dist
+.eggs
+
+# Virtual envs (image builds its own)
+.venv
+venv
+env
+
+# Tooling caches
+.ruff_cache
+.mypy_cache
+.pytest_cache
+.coverage
+htmlcov
+
+# Editor
+.vscode
+.idea
+*.swp
+.DS_Store
+Thumbs.db
+
+# Project artefacts that shouldn't leak into the image
+tests
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.log
+.env
+.env.local
+.env.*.local
+local.*.yaml
+config.yaml
+
+# Docs / meta we don't need at runtime
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+docker-compose.yml
+Dockerfile
+.dockerignore
+.pre-commit-config.yaml
+.python-version

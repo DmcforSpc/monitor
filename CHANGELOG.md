@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
 
 ## [Unreleased]
 
+### Added
+- `Dockerfile` (multi-stage with uv) + `.dockerignore` + `docker-compose.yml`
+  for one-command deployment; runtime container is non-root with healthcheck
+- `SecurityHeadersMiddleware` always-on: `X-Content-Type-Options`,
+  `X-Frame-Options: DENY`, `Strict-Transport-Security`, `Referrer-Policy`,
+  `Permissions-Policy`, `Cross-Origin-Opener-Policy`
+- Opt-in `TrustedHostMiddleware` via `CVE_ALLOWED_HOSTS` (comma-separated)
+- Opt-in `CORSMiddleware` via `CVE_CORS_ORIGINS` (read-only API: only `GET`
+  is whitelisted; `CVE_CORS_ALLOW_CREDENTIALS` toggles credentials)
+- `Settings.allowed_hosts` / `cors_origins` parse comma-separated env values
+
 ## [1.0.0] - 2026-05-27
 
 ### Added
