@@ -1,15 +1,19 @@
-"""Read-only REST API.
+"""Read-only REST API (versioned).
+
+All data endpoints live under ``/api/v1/...`` so future breaking changes can
+be published at ``/api/v2/...`` without disturbing existing consumers. The
+health and readiness probes are NOT versioned and live in
+:mod:`src.web.routes.health`.
 
 Endpoints:
 
-* ``GET /api/health`` — liveness probe
-* ``GET /api/stats`` — counters + scheduler state
-* ``GET /api/items`` — paginated list of collected items
-* ``GET /api/items/{item_id}`` — single item
-* ``GET /api/collectors`` — registered collectors
-* ``GET /api/notifiers`` — registered notifiers
-* ``GET /api/runs`` — recent collector runs
-* ``GET /api/notifications`` — recent dispatch log
+* ``GET /api/v1/stats`` — counters + scheduler state
+* ``GET /api/v1/items`` — paginated list of collected items
+* ``GET /api/v1/items/{item_id}`` — single item
+* ``GET /api/v1/collectors`` — registered collectors
+* ``GET /api/v1/notifiers`` — registered notifiers
+* ``GET /api/v1/runs`` — recent collector runs
+* ``GET /api/v1/notifications`` — recent dispatch log
 """
 
 from __future__ import annotations
@@ -21,7 +25,6 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select
 
-from src import __version__
 from src.core.collectors import collector_registry
 from src.core.notifiers import notifier_registry
 from src.core.pipeline import load_plugins
@@ -35,7 +38,7 @@ from src.db.repository import get_item, list_items
 from src.scheduler import scheduler_service
 from src.web.deps import SessionDep
 
-router = APIRouter(prefix="/api", tags=["api"])
+router = APIRouter(prefix="/api/v1", tags=["api-v1"])
 
 
 # ── Response models ────────────────────────────────────────────────
@@ -95,11 +98,6 @@ class NotificationOut(BaseModel):
 
 
 # ── Endpoints ──────────────────────────────────────────────────────
-
-
-@router.get("/health", summary="Liveness probe")
-def health() -> dict[str, str]:
-    return {"status": "ok", "version": __version__}
 
 
 @router.get("/stats", summary="Global counters & scheduler status")

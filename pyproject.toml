@@ -29,6 +29,9 @@ dev = [
     "mypy>=1.13",
     "types-pyyaml",
 ]
+observability = [
+    "logfire[fastapi,sqlalchemy,httpx]>=2.0",
+]
 
 [project.scripts]
 cve-monitor = "src.cli:app"

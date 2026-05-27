@@ -17,6 +17,17 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
 - Opt-in `CORSMiddleware` via `CVE_CORS_ORIGINS` (read-only API: only `GET`
   is whitelisted; `CVE_CORS_ALLOW_CREDENTIALS` toggles credentials)
 - `Settings.allowed_hosts` / `cors_origins` parse comma-separated env values
+- `/api/ready` readiness probe (DB health check) alongside `/api/health`
+  liveness probe; both kept outside the versioned prefix
+- Versioned data API at `/api/v1/...` (stats, items, collectors, notifiers,
+  runs, notifications) — future breaking changes can ship as `/api/v2/...`
+- Optional Logfire observability bootstrap (`pip install -e ".[observability]"`)
+  with one-line FastAPI / SQLAlchemy / httpx auto-instrumentation; opt-in via
+  `LOGFIRE_TOKEN`, silently no-op without it
+
+### Changed
+- API endpoints moved from `/api/*` to `/api/v1/*` (BREAKING for the data
+  endpoints; `/api/health` URL preserved)
 
 ## [1.0.0] - 2026-05-27
 

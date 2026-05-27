@@ -57,6 +57,29 @@ CVE_CORS_ALLOW_CREDENTIALS=false
 
 `SecurityHeadersMiddleware` 默认始终启用（无需配置），会注入 `X-Content-Type-Options`、`X-Frame-Options: DENY`、`Strict-Transport-Security`、`Referrer-Policy`、`Permissions-Policy`、`Cross-Origin-Opener-Policy`。
 
+### 观测性（Logfire，可选）
+
+```bash
+uv pip install -e ".[observability]"
+export LOGFIRE_TOKEN=lf_xxxxxxxxxxxx   # 从 https://logfire.pydantic.dev 取
+uv run cve-monitor serve
+```
+
+一行配置自动 instrumentation：FastAPI 请求 span、SQLAlchemy 查询耗时、httpx 出站调用。未装 extras 或没设 token 时全部静默 no-op，不增加任何运行时开销。
+
+### 健康检查端点
+
+| 端点 | 用途 | 行为 |
+| --- | --- | --- |
+| `GET /api/health` | Liveness 探针 | 进程在线即 200，不做任何 I/O |
+| `GET /api/ready`  | Readiness 探针 | 能跑通一次 `SELECT 1` 才 200，否则 503 |
+
+两者**不进版本前缀**——基础设施（K8s、Docker HEALTHCHECK、负载均衡）依赖固定路径。
+
+### API 版本化
+
+所有数据端点位于 `/api/v1/...`，未来重大变更会上 `/api/v2/...` 不打断旧调用方。`/api/health` 和 `/api/ready` 是例外，永远不带版本号。
+
 ## CLI 命令
 
 ```bash
@@ -91,11 +114,14 @@ src/
 ├── web/
 │   ├── app.py               # FastAPI 工厂
 │   ├── deps.py              # 依赖注入（DB session）
+│   ├── middleware.py        # SecurityHeaders / TrustedHost / CORS
 │   ├── routes/
-│   │   ├── api.py           # 只读 REST API
+│   │   ├── health.py        # /api/health + /api/ready（不带版本）
+│   │   ├── api.py           # /api/v1/* 数据 API
 │   │   └── pages.py         # 仪表盘
 │   └── templates/
 │       └── dashboard.html
+├── observability.py         # Logfire opt-in 自动 instrumentation
 ├── collectors/              # 👇 你的采集器实现放这里
 └── notifiers/               # 👇 你的通知渠道实现放这里
 ```

@@ -15,6 +15,7 @@ from fastapi import FastAPI
 from src import __version__
 from src.db.base import init_db
 from src.logging import configure_logging, get_logger
+from src.observability import configure_observability
 from src.scheduler import scheduler_service
 from src.settings import get_settings
 
@@ -55,10 +56,15 @@ def create_app() -> FastAPI:
 
     install_middlewares(app, settings)
 
+    # Observability (no-op unless LOGFIRE_TOKEN is set + extras installed)
+    configure_observability(app, settings)
+
     # Routers
     from src.web.routes.api import router as api_router
+    from src.web.routes.health import router as health_router
     from src.web.routes.pages import router as pages_router
 
+    app.include_router(health_router)
     app.include_router(api_router)
     app.include_router(pages_router)
 
