@@ -3,7 +3,7 @@
 # Final image: python:3.11-slim + read-only app + non-root user.
 
 # ── Builder ────────────────────────────────────────────────────────
-FROM python:3.11-slim AS builder
+FROM python:3.14-slim AS builder
 
 # Pin uv to a known version (matches the lockfile environment)
 COPY --from=ghcr.io/astral-sh/uv:0.11 /uv /uvx /bin/
@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 # ── Runtime ────────────────────────────────────────────────────────
-FROM python:3.11-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 # Create a non-root user
 RUN groupadd --system app && \
