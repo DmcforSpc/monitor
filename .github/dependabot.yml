@@ -1,0 +1,60 @@
+version: 2
+updates:
+  # Python runtime dependencies (pyproject.toml + uv.lock)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      python-runtime:
+        patterns:
+          - "fastapi"
+          - "uvicorn*"
+          - "pydantic*"
+          - "sqlalchemy"
+          - "apscheduler"
+          - "httpx"
+          - "structlog"
+          - "jinja2"
+          - "typer"
+          - "python-dotenv"
+      python-dev:
+        patterns:
+          - "pytest*"
+          - "ruff"
+          - "mypy"
+          - "types-*"
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "ci(deps)"
+
+  # Dockerfile base image
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker)"

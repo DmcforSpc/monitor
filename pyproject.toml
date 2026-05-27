@@ -78,3 +78,11 @@ exclude = ["tests/"]
 pythonpath = ["."]
 testpaths = ["tests"]
 addopts = "-ra -q --strict-markers"
+
+# ── bandit ──────────────────────────────────────────────────────────
+# Static security analyser. Run locally:  bandit -r src/ -c pyproject.toml
+[tool.bandit]
+exclude_dirs = ["tests", "build", "dist", ".venv", "venv"]
+# B608: hardcoded_sql_expressions — `text("SELECT 1")` in the /api/ready
+#       probe is a literal, not user input. No injection surface.
+skips = ["B608"]

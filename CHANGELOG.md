@@ -29,6 +29,17 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
 - API endpoints moved from `/api/*` to `/api/v1/*` (BREAKING for the data
   endpoints; `/api/health` URL preserved)
 
+### Security & DevEx
+- CI now runs `bandit` (static analysis) and `pip-audit` (CVE in dependencies)
+  in parallel with the lint and smoke jobs
+- `[tool.bandit]` section in `pyproject.toml` (excludes tests/build/venv,
+  whitelists the `SELECT 1` literal in `/api/ready`)
+- `.github/dependabot.yml`: weekly pip / GitHub Actions / Docker updates with
+  grouping (runtime vs dev deps) and Conventional-Commits prefixes
+- `.devcontainer/devcontainer.json`: one-click VS Code / GitHub Codespaces
+  environment (Python 3.11 + uv + ruff + mypy + recommended extensions,
+  auto-installs project + pre-commit)
+
 ## [1.0.0] - 2026-05-27
 
 ### Added
