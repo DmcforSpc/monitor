@@ -5,7 +5,7 @@ The framework provides three tables:
 * ``CollectedItem``  — any item produced by a collector (CVE, GHSA, RSS entry,
   PoC repo …). Source-specific fields live in the ``payload`` JSON column.
 * ``CollectorRun``  — execution record per collector invocation.
-* ``NotificationRecord`` — dispatch log per (item × notifier) pair.
+* ``NotificationRecord`` — dispatch log per (item, notifier) pair.
 
 There is no notion of CVE / RCE / freshness in this layer — that is plugin
 territory.
@@ -14,7 +14,7 @@ territory.
 from __future__ import annotations
 
 import enum
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import JSON, DateTime, Enum, Index, Integer, String, Text, UniqueConstraint
@@ -24,13 +24,13 @@ from src.db.base import Base
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 # ── Enums ───────────────────────────────────────────────────────────
 
 
-class ItemStatus(str, enum.Enum):
+class ItemStatus(enum.StrEnum):
     """Lifecycle state of a collected item."""
 
     NEW = "new"
@@ -39,7 +39,7 @@ class ItemStatus(str, enum.Enum):
     SKIPPED = "skipped"
 
 
-class NotificationStatus(str, enum.Enum):
+class NotificationStatus(enum.StrEnum):
     """Dispatch outcome of a notifier."""
 
     SENT = "sent"
@@ -47,7 +47,7 @@ class NotificationStatus(str, enum.Enum):
     SKIPPED = "skipped"
 
 
-class RunStatus(str, enum.Enum):
+class RunStatus(enum.StrEnum):
     """Outcome of a collector run."""
 
     OK = "ok"

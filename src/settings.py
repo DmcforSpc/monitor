@@ -75,7 +75,7 @@ class Settings(BaseSettings):
         result: dict[str, str] = {}
         for key, value in os.environ.items():
             if key.startswith(prefix) and value:
-                result[key[len(prefix):].lower()] = value
+                result[key[len(prefix) :].lower()] = value
         return result
 
 

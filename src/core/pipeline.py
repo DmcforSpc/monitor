@@ -62,7 +62,7 @@ def load_plugins(*, force: bool = False) -> None:
             full_name = f"{pkg.__name__}.{mod_info.name}"
             try:
                 importlib.import_module(full_name)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 log.error("plugin import failed", module=full_name, error=str(exc))
     _PLUGINS_LOADED = True
 
@@ -110,7 +110,7 @@ def run_pipeline(settings: Settings | None = None) -> PipelineResult:
     for name, cls in collector_registry.items():
         try:
             instance = cls(settings)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             log.error("collector instantiation failed", collector=name, error=str(exc))
             result.results.append(
                 CollectorResult(
@@ -163,12 +163,10 @@ def run_collector(
                 mark_processed(
                     session,
                     persistent,
-                    status=(
-                        ItemStatus.NOTIFIED if summary.any_sent else ItemStatus.PROCESSED
-                    ),
+                    status=(ItemStatus.NOTIFIED if summary.any_sent else ItemStatus.PROCESSED),
                 )
             notifications_sent += len(summary.sent)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         status = RunStatus.ERROR
         err = f"{exc}\n{traceback.format_exc()}"
         log_.error("collector failed", error=str(exc))
@@ -213,12 +211,10 @@ def _dispatch_item(item: CollectedItem, settings: Settings) -> DispatchSummary:
             continue
         try:
             result: NotificationResult = notifier.send(item)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             notifier.log.error("dispatch failed", item_id=item.id, error=str(exc))
             result = NotificationResult.failure(str(exc))
-        status = (
-            NotificationStatus.SENT if result.ok else NotificationStatus.FAILED
-        )
+        status = NotificationStatus.SENT if result.ok else NotificationStatus.FAILED
         with db_session() as session:
             record_notification(
                 session,

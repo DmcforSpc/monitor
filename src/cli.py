@@ -71,9 +71,7 @@ def serve(
 @app.command()
 def collect(
     name: str = typer.Option("", "--name", "-n", help="Run only the named collector."),
-    once: bool = typer.Option(  # noqa: ARG001 - reserved for future loop mode
-        True, "--once/--loop", help="Reserved: currently always one-shot."
-    ),
+    once: bool = typer.Option(True, "--once/--loop", help="Reserved: currently always one-shot."),
 ) -> None:
     """Run one collection cycle synchronously and exit."""
     from src.core.pipeline import load_plugins, run_collector, run_pipeline
@@ -180,7 +178,7 @@ def _safe_enabled(cls: type) -> bool:
     try:
         instance = cls()
         return bool(instance.enabled)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return False
 
 

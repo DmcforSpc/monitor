@@ -126,7 +126,7 @@ def iter_enabled_notifiers(settings: Settings | None = None) -> Iterable[BaseNot
     for cls in notifier_registry.values():
         try:
             instance = cls(s)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             get_logger("notifiers").error(
                 "notifier instantiation failed", notifier=cls.name, error=str(exc)
             )

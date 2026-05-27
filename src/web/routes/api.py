@@ -105,13 +105,9 @@ def health() -> dict[str, str]:
 @router.get("/stats", summary="Global counters & scheduler status")
 def stats(session: SessionDep) -> dict[str, Any]:
     load_plugins()
-    by_status: dict[str, int] = {
-        s.value: 0 for s in ItemStatus
-    }
+    by_status: dict[str, int] = {s.value: 0 for s in ItemStatus}
     rows = session.execute(
-        select(CollectedItem.status, func.count(CollectedItem.id)).group_by(
-            CollectedItem.status
-        )
+        select(CollectedItem.status, func.count(CollectedItem.id)).group_by(CollectedItem.status)
     ).all()
     for status_value, count in rows:
         key = status_value.value if hasattr(status_value, "value") else str(status_value)
@@ -204,9 +200,11 @@ def runs(
     session: SessionDep,
     limit: int = Query(50, ge=1, le=200),
 ) -> list[RunOut]:
-    rows = session.execute(
-        select(CollectorRun).order_by(CollectorRun.started_at.desc()).limit(limit)
-    ).scalars().all()
+    rows = (
+        session.execute(select(CollectorRun).order_by(CollectorRun.started_at.desc()).limit(limit))
+        .scalars()
+        .all()
+    )
     return [RunOut.model_validate(r) for r in rows]
 
 
@@ -217,9 +215,13 @@ def notifications(
     session: SessionDep,
     limit: int = Query(50, ge=1, le=200),
 ) -> list[NotificationOut]:
-    rows = session.execute(
-        select(NotificationRecord).order_by(NotificationRecord.created_at.desc()).limit(limit)
-    ).scalars().all()
+    rows = (
+        session.execute(
+            select(NotificationRecord).order_by(NotificationRecord.created_at.desc()).limit(limit)
+        )
+        .scalars()
+        .all()
+    )
     return [NotificationOut.model_validate(r) for r in rows]
 
 
@@ -228,5 +230,5 @@ def _safe_enabled(cls: type) -> bool:
     try:
         instance = cls()
         return bool(instance.enabled)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return False

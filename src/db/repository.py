@@ -8,7 +8,7 @@ them.
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
@@ -22,7 +22,6 @@ from src.db.models import (
     NotificationStatus,
     RunStatus,
 )
-
 
 # ── Items ───────────────────────────────────────────────────────────
 
@@ -68,22 +67,19 @@ def list_items(
     if status:
         base = base.where(CollectedItem.status == status)
     if query:
-        like = f"%{query}%"
         base = base.where(
             CollectedItem.title.contains(query)
             | CollectedItem.external_id.contains(query)
             | CollectedItem.summary.contains(query)
         )
-    total = session.execute(
-        select(func.count()).select_from(base.subquery())
-    ).scalar_one()
+    total = session.execute(select(func.count()).select_from(base.subquery())).scalar_one()
     rows = session.execute(base.offset(offset).limit(limit)).scalars().all()
     return total, rows
 
 
 def mark_processed(session: Session, item: CollectedItem, *, status: ItemStatus) -> None:
     item.status = status
-    item.processed_at = datetime.now(timezone.utc)
+    item.processed_at = datetime.now(UTC)
 
 
 # ── Notifications ───────────────────────────────────────────────────

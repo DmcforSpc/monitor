@@ -1,0 +1,32 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/)
+and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.0.0] - 2026-05-27
+
+### Added
+- Plugin-based collector / notifier framework with class-level registration
+- Generic `CollectedItem` ORM model (source-agnostic, JSON `payload` extension)
+- Repository helpers for upsert/dedup, listing, and notification logging
+- APScheduler-based background pipeline loop with safe-singleton wrapper
+- FastAPI read-only dashboard with REST API (`/api/health`, `/api/stats`,
+  `/api/items`, `/api/collectors`, `/api/notifiers`, `/api/runs`,
+  `/api/notifications`)
+- Typer CLI: `serve` / `collect` / `list collectors|notifiers` /
+  `db init|reset` / `version`
+- `structlog`-based structured logging with rotating file handler and optional
+  JSON output
+- Pydantic Settings (env prefix `CVE_`) with plugin namespace
+  (`CVE_PLUGIN_<NAME>_*`)
+- `pyproject.toml` (hatchling backend) compatible with `uv`
+- MIT License, CHANGELOG, CONTRIBUTING guide
+- GitHub Actions CI (ruff lint + format check + mypy)
+- Pre-commit hooks (ruff, gitleaks, standard whitespace / YAML / TOML checks)
+
+[Unreleased]: https://github.com/DmcforSpc/monitor/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/DmcforSpc/monitor/releases/tag/v1.0.0

@@ -39,16 +39,12 @@ def dashboard(request: Request, session: SessionDep) -> Any:
         ).all()
     )
     recent_items = (
-        session.execute(
-            select(CollectedItem).order_by(CollectedItem.created_at.desc()).limit(20)
-        )
+        session.execute(select(CollectedItem).order_by(CollectedItem.created_at.desc()).limit(20))
         .scalars()
         .all()
     )
     recent_runs = (
-        session.execute(
-            select(CollectorRun).order_by(CollectorRun.started_at.desc()).limit(10)
-        )
+        session.execute(select(CollectorRun).order_by(CollectorRun.started_at.desc()).limit(10))
         .scalars()
         .all()
     )

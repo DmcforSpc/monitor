@@ -43,9 +43,7 @@ class SchedulerService:
         with self._lock:
             if self.running:
                 return
-            scheduler = BackgroundScheduler(
-                job_defaults={"max_instances": 1, "coalesce": True}
-            )
+            scheduler = BackgroundScheduler(job_defaults={"max_instances": 1, "coalesce": True})
             scheduler.add_job(
                 _safe_run_pipeline,
                 trigger="interval",
@@ -88,7 +86,7 @@ class SchedulerService:
 def _safe_run_pipeline(*_: Any) -> None:
     try:
         run_pipeline()
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log.error("pipeline crashed", error=str(exc))
 
 
