@@ -92,39 +92,54 @@ curl http://127.0.0.1:8000/api/v1/runs | jq
 CVE_LOG_LEVEL=DEBUG uv run cve-monitor collect --name my_source
 ```
 
-## 完整示例：CISA KEV
+## 完整示例：一手 PoC 仓库（poc_github）
 
-```python title="src/collectors/cisa_kev.py"
+仓库自带的 `poc_github` 采集器就是个真实例子 —— 它从 nomi-sec PoC-in-GitHub 源
+拉取名字里带 CVE 编号的 GitHub 仓库，每条 `url` 直指存放 exploit 代码的仓库本身，
+而非漏洞通告。注意 `fingerprint` 用仓库全名而不是 CVE：同一个 CVE 可能有多个 PoC。
+
+```python title="src/collectors/poc_github.py"
 from collections.abc import Iterable
 
 from src.core.collectors import BaseCollector, register_collector
 from src.db.models import CollectedItem
 
-KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+_API = "https://poc-in-github.motikan2010.net/api/v1/"
 
 
 @register_collector
-class CisaKevCollector(BaseCollector):
-    name = "cisa_kev"
-    description = "CISA Known Exploited Vulnerabilities catalog"
+class PocGithubCollector(BaseCollector):
+    name = "poc_github"
+    description = "First-hand PoC repos from the nomi-sec PoC-in-GitHub feed"
+
+    @property
+    def enabled(self) -> bool:
+        return str(self.config.get("enabled", "false")).lower() in ("true", "1", "yes", "on")
 
     def collect(self) -> Iterable[CollectedItem]:
         with self.http_client() as http:
-            data = http.get(KEV_URL).json()
-        for v in data.get("vulnerabilities", [])[-100:]:
-            cve = v["cveID"]
+            resp = http.get(_API, params={"sort": "created", "order": "desc"})
+            resp.raise_for_status()
+        for poc in resp.json().get("pocs", []):
+            full_name = poc.get("full_name")
+            html_url = poc.get("html_url")
+            if not full_name or not html_url:
+                continue
+            cve = poc.get("cve_id") or ""
             yield CollectedItem(
                 collector=self.name,
-                external_id=cve,
-                fingerprint=f"{self.name}:{cve}",   # natural key
-                title=v.get("vulnerabilityName", cve),
-                url=f"https://nvd.nist.gov/vuln/detail/{cve}",
-                summary=v.get("shortDescription", ""),
+                external_id=cve or full_name,
+                # 按仓库去重，不按 CVE：一个 CVE 可能有多个 PoC 仓库
+                fingerprint=f"{self.name}:{full_name}",
+                title=full_name,
+                url=html_url,
+                summary=(poc.get("description") or "")[:2000],
                 payload={
-                    "vendor": v.get("vendorProject"),
-                    "product": v.get("product"),
-                    "ransomware_known": v.get("knownRansomwareCampaignUse") == "Known",
-                    "trust": "high",
+                    "cve_id": cve,
+                    "repo": full_name,
+                    "stars": int(poc.get("stargazers_count") or 0),
+                    "trust": "medium",
+                    "source": "poc_github",
                 },
             )
 ```

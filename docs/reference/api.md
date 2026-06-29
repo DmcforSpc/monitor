@@ -42,7 +42,7 @@ DB 不可用：HTTP 503 +
 {
   "total_items": 123,
   "by_status": { "new": 0, "processed": 5, "notified": 118, "skipped": 0 },
-  "by_collector": { "cisa_kev": 80, "ghsa": 43 },
+  "by_collector": { "poc_github": 80, "poc_search": 43 },
   "collectors_registered": 2,
   "notifiers_registered": 1,
   "scheduler": { "running": true, "interval_seconds": 300, "next_run": "..." }
@@ -69,8 +69,8 @@ DB 不可用：HTTP 503 +
 
 ```json
 [
-  { "name": "cisa_kev", "description": "...", "enabled": true },
-  { "name": "ghsa", "description": "...", "enabled": false }
+  { "name": "poc_github", "description": "...", "enabled": true },
+  { "name": "poc_search", "description": "...", "enabled": false }
 ]
 ```
 
@@ -86,7 +86,7 @@ DB 不可用：HTTP 503 +
 [
   {
     "id": 1,
-    "collector": "cisa_kev",
+    "collector": "poc_github",
     "status": "ok",
     "items_found": 50,
     "items_new": 12,

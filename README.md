@@ -130,45 +130,52 @@ src/
 
 ## 扩展：实现一个采集器
 
-新建 `src/collectors/cisa_kev.py`：
+仓库自带一手 PoC 采集器 `src/collectors/poc_github.py`（拉 nomi-sec PoC-in-GitHub 索引，无需 token），是最小可用的真实范例：
 
 ```python
 from collections.abc import Iterable
-from datetime import datetime
-
-import httpx
 
 from src.core.collectors import BaseCollector, register_collector
 from src.db.models import CollectedItem
 
+API = "https://poc-in-github.motikan2010.net/api/v1/"
+
 
 @register_collector
-class CisaKevCollector(BaseCollector):
-    name = "cisa_kev"
-    description = "CISA Known Exploited Vulnerabilities catalog"
-    trust = "high"
+class PocGithubCollector(BaseCollector):
+    name = "poc_github"
+    description = "First-hand PoC repos from the nomi-sec PoC-in-GitHub feed"
+
+    @property
+    def enabled(self) -> bool:
+        return self.config.get("enabled", "false").lower() in ("true", "1", "yes", "on")
 
     def collect(self) -> Iterable[CollectedItem]:
-        url = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
-        resp = httpx.get(url, timeout=self.settings.http_timeout)
-        resp.raise_for_status()
-        for v in resp.json().get("vulnerabilities", [])[-50:]:
-            cve_id = v["cveID"]
+        with self.http_client() as http:
+            resp = http.get(API, params={"sort": "created", "order": "desc"})
+            resp.raise_for_status()
+        for poc in resp.json().get("pocs", []):
+            full_name = poc.get("full_name")
+            if not full_name or not poc.get("html_url"):
+                continue
             yield CollectedItem(
                 collector=self.name,
-                external_id=cve_id,
-                title=v["vulnerabilityName"],
-                url=f"https://nvd.nist.gov/vuln/detail/{cve_id}",
-                summary=v.get("shortDescription", ""),
+                external_id=poc.get("cve_id") or full_name,
+                # 去重锚在仓库而非 CVE：同一 CVE 可能有多个一手 PoC
+                fingerprint=f"{self.name}:{full_name}",
+                title=full_name,
+                url=poc["html_url"],
+                summary=(poc.get("description") or "")[:2000],
                 payload={
-                    "vendor": v.get("vendorProject"),
-                    "product": v.get("product"),
-                    "trust": self.trust,
+                    "cve_id": poc.get("cve_id"),
+                    "repo": full_name,
+                    "stars": int(poc.get("stargazers_count") or 0),
+                    "trust": "medium",
                 },
             )
 ```
 
-下次 `uv run cve-monitor collect` 就会自动跑它。
+`CVE_PLUGIN_POC_GITHUB_ENABLED=true uv run cve-monitor collect` 就会拉到最新一手 PoC 仓库。
 
 ## 扩展：实现一个通知渠道
 

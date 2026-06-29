@@ -64,8 +64,8 @@ Postgres 示例：`postgresql+psycopg://user:pass@host:5432/cve`。SQLite 在容
 # 例：feishu notifier
 CVE_PLUGIN_FEISHU_WEBHOOK="https://open.feishu.cn/open-apis/bot/v2/hook/xxxx"
 
-# 例：cisa_kev collector
-CVE_PLUGIN_CISA_KEV_API_TIMEOUT=60
+# 例：poc_github collector
+CVE_PLUGIN_POC_GITHUB_MAX_ITEMS=100
 ```
 
 ## 读取顺序

@@ -48,22 +48,22 @@ uv run cve-monitor serve
 
 ## 6. 启用一个内置默认源（最快）
 
-仓库自带 3 个默认采集器 + 1 个默认通知，全部默认 disabled（除了 console）。两行 env 即可看到推送：
+仓库自带 2 个一手 PoC 采集器 + 1 个默认通知，全部默认 disabled（除了 console）。两行 env 即可看到推送：
 
 ```bash
-# 启用 CISA KEV（最高信号源，无需 token）
-export CVE_PLUGIN_CISA_KEV_ENABLED=true
+# 启用 nomi-sec PoC 源（一手 PoC 仓库，无需 token）
+export CVE_PLUGIN_POC_GITHUB_ENABLED=true
 uv run cve-monitor collect
 ```
 
-启动后日志里能看到形如 `item_dispatched collector=cisa_kev external_id=CVE-2024-xxxx ...` 的输出，就说明端到端通了。其他可启用的：
+启动后日志里能看到形如 `item_dispatched collector=poc_github external_id=CVE-2024-xxxx ...` 的输出，就说明端到端通了。其他可启用的：
 
 | 源 | 启用 env | 备注 |
 | --- | --- | --- |
-| `cisa_kev` | `CVE_PLUGIN_CISA_KEV_ENABLED=true` | 在野利用确认 |
-| `nvd_recent` | `CVE_PLUGIN_NVD_RECENT_ENABLED=true` | 可设 `NVD_RECENT_API_KEY` 提升限速 |
-| `ghsa` | `CVE_PLUGIN_GHSA_ENABLED=true` | 可设 `GHSA_TOKEN` 或 `GH_TOKEN` 走 5000/hr |
+| `poc_github` | `CVE_PLUGIN_POC_GITHUB_ENABLED=true` | nomi-sec PoC-in-GitHub 索引，无 token |
+| `poc_search` | `CVE_PLUGIN_POC_SEARCH_ENABLED=true` | 实时 GitHub 仓库搜索，建议设 `POC_SEARCH_TOKEN` 或 `GH_TOKEN`；默认只留名字带具体 `CVE-YYYY-NNNN` 的真 PoC（过滤掉聚合/工具类噪声），设 `POC_SEARCH_REQUIRE_CVE=false` 可放开 |
 | `console` | 默认 ON | `CVE_PLUGIN_CONSOLE_ENABLED=false` 关闭 |
+| `feishu` | 配 `CVE_PLUGIN_FEISHU_WEBHOOK` 即启用 | 飞书/Lark 群机器人，推送互动卡片；限频 100/min，内置 0.7s 节流 |
 
 ## 7. 写第一个采集器
 

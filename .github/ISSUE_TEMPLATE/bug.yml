@@ -27,7 +27,7 @@ body:
       label: Affected component
       options:
         - Framework core (src/core, src/db, src/web, src/scheduler)
-        - Default collector (cisa_kev / nvd_recent / ghsa)
+        - Default collector (poc_github / poc_search)
         - Default notifier (console)
         - CLI (cve-monitor command)
         - Web dashboard / templates
@@ -53,7 +53,7 @@ body:
       description: A minimal sequence of commands that triggers the bug.
       placeholder: |
         1. cve-monitor db init
-        2. CVE_PLUGIN_CISA_KEV_ENABLED=true cve-monitor collect
+        2. CVE_PLUGIN_POC_GITHUB_ENABLED=true cve-monitor collect
         3. ...
       render: shell
     validations:

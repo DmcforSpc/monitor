@@ -5,8 +5,8 @@
 ```mermaid
 flowchart LR
     subgraph Plugins["插件层（你的代码）"]
-        C1[collectors/cisa_kev.py]
-        C2[collectors/ghsa.py]
+        C1[collectors/poc_github.py]
+        C2[collectors/poc_search.py]
         N1[notifiers/feishu.py]
         N2[notifiers/telegram.py]
     end
@@ -108,7 +108,7 @@ sequenceDiagram
 
 **不绑定 CVE 语义**：v3 把表结构焊死在 CVE 上，后果是想加 "GitHub 仓库变更"、"Discord 安全公告" 等非 CVE 来源就要改 schema。v4 通用化后，每个 collector 只对自己负责的 payload 结构。
 
-**Pipeline 不感知插件名**：注册表透明，启动期靠 pkgutil 扫描，没有任何 `if source == "cisa_kev"` 类硬编码。新增源只需新加一个文件。
+**Pipeline 不感知插件名**：注册表透明，启动期靠 pkgutil 扫描，没有任何 `if source == "poc_github"` 类硬编码。新增源只需新加一个文件。
 
 **通知去重**：`(item_id, notifier_name)` 唯一约束防止跨 cycle 重复推送。
 
