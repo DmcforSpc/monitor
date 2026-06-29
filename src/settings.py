@@ -13,6 +13,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Literal
 
+from dotenv import dotenv_values
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
@@ -89,10 +90,22 @@ class Settings(BaseSettings):
         For ``name='feishu'`` it returns every ``CVE_PLUGIN_FEISHU_*`` variable
         as a dict with the prefix stripped and keys lower-cased. Empty strings
         are filtered out so plugins can ``if cfg.get("webhook"): ...``.
+
+        Values are sourced from both the ``.env`` file and the real process
+        environment, with ``os.environ`` taking precedence — mirroring how
+        pydantic-settings layers the two for declared fields. (pydantic loads
+        ``.env`` without exporting into ``os.environ``, so scanning the
+        environment alone would miss ``CVE_PLUGIN_*`` keys set only in ``.env``.)
         """
         prefix = f"{self.plugin_env_prefix}{name.upper()}_"
+        merged: dict[str, str | None] = {}
+        env_file = self.model_config.get("env_file")
+        if env_file:
+            merged.update(dotenv_values(env_file, encoding="utf-8"))
+        merged.update(os.environ)
+
         result: dict[str, str] = {}
-        for key, value in os.environ.items():
+        for key, value in merged.items():
             if key.startswith(prefix) and value:
                 result[key[len(prefix) :].lower()] = value
         return result

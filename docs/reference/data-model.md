@@ -69,8 +69,8 @@ class ItemStatus(enum.StrEnum):
 ## 为什么不为 CVE / EPSS / CVSS 设专用字段
 
 刻意避免 — 不同 collector 关心的字段差异很大：
-- CISA KEV 关心 `vendor` / `product` / `ransomware_known`
-- GHSA 关心 `severity` / `cvss_score` / `affected_packages`
+- `poc_github` 关心 `repo` / `stars` / `cve_id` / `trust`
+- `poc_search` 关心 `repo` / `language` / `pushed_at` / `stars`
 - RSS 关心 `published_at` / `tags`
 - 自建 Webhook 可能有完全不同的字段
 

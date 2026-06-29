@@ -50,15 +50,32 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
   GitHub Pages on every push to `main` that touches docs
 
 ### Default plugins (bundled, all opt-in)
-- **`cisa_kev`** collector — CISA Known Exploited Vulnerabilities catalog
-  (highest-signal source; no auth). `CVE_PLUGIN_CISA_KEV_ENABLED=true`.
-- **`nvd_recent`** collector — NIST NVD API 2.0, configurable lookback
-  window (default 7 days) + CVSS extraction. `CVE_PLUGIN_NVD_RECENT_ENABLED=true`.
-- **`ghsa`** collector — GitHub Security Advisories (severity ≥ high), opt-in
-  PAT for higher rate limit. `CVE_PLUGIN_GHSA_ENABLED=true`.
+- **`poc_github`** collector — first-hand PoC repositories from the nomi-sec
+  PoC-in-GitHub feed (repos whose name contains a CVE id; no auth, clean
+  signal). `CVE_PLUGIN_POC_GITHUB_ENABLED=true`.
+- **`poc_search`** collector — first-hand PoC repositories via the live GitHub
+  repository search API (catches brand-new exploit repos before third-party
+  indexes pick them up). `CVE_PLUGIN_POC_SEARCH_ENABLED=true`; set
+  `CVE_PLUGIN_POC_SEARCH_TOKEN` (or `GH_TOKEN`) for a usable rate limit.
+  Defaults to keeping only repos whose name carries a concrete `CVE-YYYY-NNNN`
+  id (drops aggregators / trackers / tooling); set
+  `CVE_PLUGIN_POC_SEARCH_REQUIRE_CVE=false` for the unfiltered firehose.
+- **`feishu`** notifier — pushes each new item to a Feishu / Lark group via a
+  custom-bot webhook as an interactive card. `CVE_PLUGIN_FEISHU_WEBHOOK=...`;
+  optional `CVE_PLUGIN_FEISHU_SECRET` for signature-verified bots. Inspects the
+  Feishu JSON `code` (not just HTTP status) so app-level errors surface as
+  failures, and self-throttles to `CVE_PLUGIN_FEISHU_MIN_INTERVAL` (default
+  0.7s) between sends to stay under the 100 msg/min custom-bot cap.
 - **`console`** notifier — structlog dispatcher; **enabled by default** so
   the pipeline produces visible output without any configuration. Disable
   with `CVE_PLUGIN_CONSOLE_ENABLED=false`.
+
+### Fixed
+- `Settings.plugin_config()` now reads `CVE_PLUGIN_*` values from the `.env`
+  file as well as the process environment (env vars still take precedence).
+  Previously pydantic loaded `.env` without exporting to `os.environ`, so
+  plugin config set only in `.env` (e.g. `CVE_PLUGIN_POC_GITHUB_ENABLED`) was
+  silently ignored and bundled collectors never ran unless the var was exported.
 
 ### Processing logic
 - `httpx-retries` integrated into `BaseCollector.http_client()` and

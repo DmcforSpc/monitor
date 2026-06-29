@@ -60,9 +60,11 @@ curl http://127.0.0.1:8000/api/v1/notifications | jq
 uv run cve-monitor collect
 ```
 
-## 完整示例：飞书
+## 完整示例：飞书（已内置）
 
-```python title="src/notifiers/feishu.py"
+仓库自带 `src/notifiers/feishu.py`，把每条新 PoC 渲染成一张飞书互动卡片。下面是核心逻辑（实际文件还含签名、节流，见下方说明）：
+
+```python title="src/notifiers/feishu.py（简化）"
 from src.core.notifiers import BaseNotifier, NotificationResult, register_notifier
 from src.db.models import CollectedItem
 
@@ -77,28 +79,31 @@ class FeishuNotifier(BaseNotifier):
         return bool(self.config.get("webhook"))
 
     def send(self, item: CollectedItem) -> NotificationResult:
-        body = f"**{item.external_id or item.title}**\n{item.summary[:500]}\n[Source]({item.url})"
+        body = {"msg_type": "interactive", "card": self._build_card(item)}
         with self.http_client() as http:
-            resp = http.post(
-                self.config["webhook"],
-                json={
-                    "msg_type": "interactive",
-                    "card": {
-                        "header": {"title": {"tag": "plain_text", "content": item.title[:120]}},
-                        "elements": [{"tag": "markdown", "content": body}],
-                    },
-                },
-            )
-        if resp.is_success:
-            return NotificationResult.success(f"HTTP {resp.status_code}")
-        return NotificationResult.failure(f"HTTP {resp.status_code}: {resp.text[:200]}")
+            resp = http.post(self.config["webhook"], json=body)
+            resp.raise_for_status()
+            data = resp.json()
+        # 飞书即使出错也返回 HTTP 200，真实结果在 JSON `code`（0 == 成功）。
+        if data.get("code", 0) != 0:
+            return NotificationResult.failure(f"feishu code={data['code']} msg={data.get('msg', '')[:200]}")
+        return NotificationResult.success("delivered")
 ```
+
+两个值得注意的点（内置文件已实现）：
+
+- **`code` 校验**：飞书 webhook 出错（签名失效、限频、webhook 过期）也回 HTTP 200，错误码藏在 JSON `code` 字段。只看 HTTP 状态会把失败误判成成功，所以一定要查 `code`。
+- **节流**：飞书自定义机器人限频 100 条/分钟。首次回填大量 PoC 时会瞬时撞限（`code=11232`），内置实现用一个类级时间戳把每次发送间隔拉到 `min_interval`（默认 0.7s）。
 
 配置：
 
 ```bash
 # .env
 CVE_PLUGIN_FEISHU_WEBHOOK=https://open.feishu.cn/open-apis/bot/v2/hook/xxxx
+# 仅当机器人开了「签名校验」才需要：
+# CVE_PLUGIN_FEISHU_SECRET=xxxx
+# 发送最小间隔秒数（默认 0.7，设 0 关闭节流）：
+# CVE_PLUGIN_FEISHU_MIN_INTERVAL=0.7
 ```
 
 ## 完整示例：Telegram
