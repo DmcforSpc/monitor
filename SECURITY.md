@@ -32,7 +32,7 @@ Please include:
 | --- | --- |
 | Code under `src/` | User-written collectors under `src/collectors/` (report to that plugin's author) |
 | `.github/workflows/*` | User-written notifiers under `src/notifiers/` |
-| `Dockerfile`, `docker-compose.yml` | Third-party dependency CVEs (covered by `pip-audit` in CI — file an issue if it's not flagged) |
+| `Dockerfile` | Third-party dependency CVEs (covered by `pip-audit` in CI — file an issue if it's not flagged) |
 | Default middleware (`src/web/middleware.py`) | Self-hosted infrastructure (Nginx config, OS hardening, etc.) |
 
 ## Supported versions

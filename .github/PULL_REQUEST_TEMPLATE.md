@@ -24,7 +24,7 @@
 - [ ] `pytest` passes locally (if you have the test suite)
 - [ ] Updated `CHANGELOG.md` under `[Unreleased]`
 - [ ] No secrets in diff — pre-commit's `gitleaks` should catch any, but please double-check
-- [ ] Updated docs (`docs/`, `README.md`, plugin READMEs) if user-facing behaviour changed
+- [ ] Updated documentation (`README.md`, plugin READMEs) if user-facing behaviour changed
 - [ ] If this is a new plugin: docstring lists every required env var
 
 ## Testing notes

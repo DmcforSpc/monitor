@@ -33,10 +33,6 @@ dev = [
 observability = [
     "logfire[fastapi,sqlalchemy,httpx]>=2.0",
 ]
-docs = [
-    "mkdocs-material>=9.5",
-    "pymdown-extensions>=10",
-]
 
 [project.scripts]
 cve-monitor = "src.cli:app"

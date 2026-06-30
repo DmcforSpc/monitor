@@ -75,7 +75,6 @@ jobs:
             org.opencontainers.image.title=CVE Monitor
             org.opencontainers.image.description=Extensible plugin-based security intelligence framework
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.documentation=https://DmcforSpc.github.io/monitor/
             org.opencontainers.image.licenses=MIT
 
       - name: Build & push multi-arch image
@@ -108,7 +107,3 @@ jobs:
             ## :memo: What's changed
 
             See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) and the auto-generated notes below.
-
-            ## :books: Documentation
-
-            https://DmcforSpc.github.io/monitor/

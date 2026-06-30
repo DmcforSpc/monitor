@@ -8,8 +8,7 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
 ## [Unreleased]
 
 ### Added
-- `Dockerfile` (multi-stage with uv) + `.dockerignore` + `docker-compose.yml`
-  for one-command deployment; runtime container is non-root with healthcheck
+- `Dockerfile` (multi-stage with uv) + `.dockerignore`; runtime container is non-root with healthcheck
 - `SecurityHeadersMiddleware` always-on: `X-Content-Type-Options`,
   `X-Frame-Options: DENY`, `Strict-Transport-Security`, `Referrer-Policy`,
   `Permissions-Policy`, `Cross-Origin-Opener-Policy`
@@ -36,18 +35,6 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/
   whitelists the `SELECT 1` literal in `/api/ready`)
 - `.github/dependabot.yml`: weekly pip / GitHub Actions / Docker updates with
   grouping (runtime vs dev deps) and Conventional-Commits prefixes
-- `.devcontainer/devcontainer.json`: one-click VS Code / GitHub Codespaces
-  environment (Python 3.11 + uv + ruff + mypy + recommended extensions,
-  auto-installs project + pre-commit)
-
-### Documentation
-- MkDocs Material site under `docs/` covering quickstart, architecture,
-  plugin development (collectors & notifiers), deployment (Docker /
-  security / observability), and CLI / API / configuration / data model
-  references
-- `[docs]` extras group: `mkdocs-material` + `pymdown-extensions`
-- `.github/workflows/docs.yml`: build (`mkdocs build --strict`) + deploy to
-  GitHub Pages on every push to `main` that touches docs
 
 ### Default plugins (bundled, all opt-in)
 - **`poc_github`** collector — first-hand PoC repositories from the nomi-sec

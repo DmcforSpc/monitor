@@ -78,9 +78,7 @@ class FeishuNotifier(BaseNotifier):
         # Feishu signals app-level errors via `code` (0 == ok), not HTTP status.
         code = data.get("code", 0)
         if code != 0:
-            return NotificationResult.failure(
-                f"feishu code={code} msg={data.get('msg', '')[:200]}"
-            )
+            return NotificationResult.failure(f"feishu code={code} msg={data.get('msg', '')[:200]}")
         return NotificationResult.success("delivered")
 
     # ── Throttling ───────────────────────────────────────────────────

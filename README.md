@@ -2,7 +2,7 @@
 
 > **可扩展的安全情报采集与推送框架** — 提供数据采集、去重、调度、Web 仪表盘和通知派发的通用基础设施，业务逻辑（具体采集源、通知渠道、评分规则）以**插件式**方式由用户自行扩展。
 
-📚 **[完整文档站](https://DmcforSpc.github.io/monitor/)** · 🐳 [Docker Hub](#docker生产推荐) · 📦 [CHANGELOG](CHANGELOG.md) · 🤝 [贡献指南](CONTRIBUTING.md)
+🐳 [Docker](#docker生产推荐) · 📦 [CHANGELOG](CHANGELOG.md) · 🤝 [贡献指南](CONTRIBUTING.md)
 
 ## 设计理念
 
@@ -39,13 +39,9 @@ uv run cve-monitor serve
 docker build -t cve-monitor .
 docker run -d --name cve-monitor -p 8000:8000 -v cve-data:/data \
     -e CVE_DATABASE_URL=sqlite:////data/cve_monitor.db cve-monitor
-
-# 或用 compose（自动持久化卷 + 健康检查）
-docker compose up -d
-docker compose logs -f
 ```
 
-镜像基于 `python:3.11-slim`，多阶段构建用 uv 锁定依赖，运行时为非 root 用户 + 内置 healthcheck。
+镜像基于 `python:3.11-slim`，多阶段构建用 uv 锁定依赖，运行时为非 root 用户，并内置 Dockerfile healthcheck。
 
 ### 安全中间件（公网部署）
 
